@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTasksRequest;
 use App\Http\Requests\UpdateTasksRequest;
-use App\Models\Task;
 use App\Models\Tasks;
 
 class TasksController extends Controller
@@ -16,7 +15,8 @@ class TasksController extends Controller
      */
     public function index()
     {
-        return json_encode(Task::all());
+        return json_encode(Tasks::all());
+
     }
 
     /**
