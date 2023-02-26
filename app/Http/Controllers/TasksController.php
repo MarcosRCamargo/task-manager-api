@@ -17,8 +17,9 @@ class TasksController extends Controller
      */
     public function index()
     {
-        return json_encode(Tasks::all());
-
+        $tasks = Tasks::all();
+        return response()->json($tasks, 200);
+        
     }
 
     /**
@@ -29,7 +30,7 @@ class TasksController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'title' => 'required',
+            'title' => 'required|unique:posts|max:255',
             'description' => 'required',
             'start_date' => '',
             'end_estimate_date' => 'required',
@@ -71,9 +72,10 @@ class TasksController extends Controller
      * @param  \App\Models\Tasks  $tasks
      * @return \Illuminate\Http\Response
      */
-    public function show(Tasks $tasks)
+    public function show($id)
     {
-        //
+        $task = Tasks::findOrFail( $id );
+        return  ($task);
     }
 
     /**
@@ -94,25 +96,31 @@ class TasksController extends Controller
      * @param  \App\Models\Tasks  $tasks
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateTasksRequest $request, Tasks $tasks)
+    public function update(StoreTasksRequest $request, Tasks $tasks)
     {
-        $post->update($request->all());
+        $tasks->update($request->all());
 
         return response()->json([
             'status' => true,
-            'message' => "Post Updated successfully!",
-            'post' => $post
+            'message' => "Task Updated successfully!",
+            'task' => $tasks
         ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Tasks  $tasks
+     * @param $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Tasks $tasks)
+    public function destroy($id)
     {
-        //
+        $tasks = Tasks::findOrFail( $id );
+        if( $tasks->delete() ){
+            return response()->json([
+                'status' => true,
+                'message' => "Task Deleted successfully!",
+            ], 200);
+        }
     }
 }
