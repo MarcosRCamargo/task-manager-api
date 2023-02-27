@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTasksRequest;
 use App\Models\Tasks;
 use Illuminate\Http\Request;
 use App\Jobs\newTaskManager as JobsNewTaskManager;
+use App\Models\User;
 use stdClass;
 
 class TasksController extends Controller
@@ -31,6 +32,7 @@ class TasksController extends Controller
     {
         $this->validateTask($request);
         $tasks = Tasks::create($request->all());
+        $user = User::findOrFail($tasks->delegated_user);
         if( $tasks->save() ){
             return response()->json([
                 'status' => true,
@@ -51,6 +53,8 @@ class TasksController extends Controller
 
         $this->validateTask($request);
         $task = Tasks::create($request->all());
+        $user = User::findOrFail($task->delegated_user);
+        $this->sendMail($user, $task);
         if( $task->save() ){
             return response()->json([
                 'status' => true,
@@ -131,18 +135,18 @@ class TasksController extends Controller
     }
     public function sendMail($user, $task)  
     {
-        $user = new stdClass();
-        $task = new stdClass();
-        $user->name = "Marcos Camargo";
-        $user->email = "marcos.marrize@gmail.com";
-        $task->title = 'Primeira Tarefa';
-        $task->description= 'Tarefa de criação de Documentação de API';
-        $task->start_date= '02-25-2023 09:00:00';
-        $task->end_estimate_date= '02-25-2023 09:00:00';
-        $task->end_date= '02-25-2023 09:00:00';
-        $task->status= 1;
-        $task->owner= 1;
-        $task->delegated_user= 2;
-        JobsNewTaskManager::dispatch($user, $task)->delay(now()->addSeconds(10));
+        $user_task = new stdClass();
+        $task_user = new stdClass();
+        $user_task->name = $user->name;
+        $user_task->email =  $user->email;
+        $task_user->title =  $task->title;
+        $task_user->description =  $task->description;
+        $task_user->start_date =  $task->start_date;
+        $task_user->end_estimate_date = $task->end_estimate_date;
+        $task_user->end_date =  $task->end_date;
+        $task_user->status=  $task->status;
+        $task_user->owner= $task->owner;
+        $task_user->delegated_user= $task->delegated_user;
+        JobsNewTaskManager::dispatch($user_task, $task_user)->delay(now()->addSeconds(10));
     }
 }
