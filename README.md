@@ -35,13 +35,26 @@ O modelo de dados abaixo foi implementado via Eloquent ORM nativo do laravel.
 
 ### Testes Unitários
 
+Para execução dos testes Unitários é necessario executar o seguinte comando:
+
+```bash
+php artisan queue:work
+```
 ### Notificações de e-mail:
 
 O envio de e-mail:
+Quando uma nova tarefa é criada é criado um job que fica armazenado na fila (queue) para o envio da notificação para o usuário. Para que o job seja executado é necessario que o worker do Laravel esteja ativo, ele é responsável por executar a fila Para isto é necessário executar o comando:
+```bash
+php artisan queue:work
+```
 
 ### Instruções adicionais
 
-Thank you for considering contributing 
+
+```bash
+php artisan queue:work
+```
+
 
 ### License
 

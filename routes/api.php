@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TasksController;
 use App\Jobs\newTaskManager as JobsNewTaskManager;
 use App\Mail\newTaskManager;
@@ -23,16 +24,39 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
 	return 'Task API';
 });
-Route::controller(TasksController::class)->group(function () {
-    Route::get('/tasks', 'index');
-    Route::get('/tasks/{id}', 'show');
-    Route::post('/tasks', 'store');
-    Route::put('task/{id}', 'update');
-    Route::delete('task/{id}', 'destroy');
-});
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
+// Route::controller(TasksController::class)->group(function () {
+//     Route::get('/tasks', 'index');
+//     Route::get('/tasks/{id}', 'show');
+//     Route::post('/tasks', 'store');
+//     Route::put('task/{id}', 'update');
+//     Route::delete('task/{id}', 'destroy');
 // });
+
+Route::middleware('api')->group(function () {
+    Route::post('/login', [TasksController::class, 'login']);
+    Route::get('/tasks', [TasksController::class, 'index']);
+    Route::get('/tasks/{id}', [TasksController::class, 'show']);
+    Route::post('/tasks', [TasksController::class, 'store']);
+    Route::put('task/{id}', [TasksController::class, 'update']);
+    Route::delete('task/{id}', [TasksController::class, 'destroy']);
+});
+// Route::controller(AuthController::class)->group(function () {
+//     Route::post('login', 'login');
+//     Route::post('register', 'register');
+//     Route::post('logout', 'logout');
+//     Route::post('refresh', 'refresh');
+
+// });
+
+Route::group([
+    'middleware' => 'api',
+    ], function ($router) {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::get('/user-profile', [AuthController::class, 'userProfile']);    
+});
 Route::post('/send-mail', function () {
     $user = new stdClass();
     $task = new stdClass();
