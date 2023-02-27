@@ -24,7 +24,7 @@ class StoreTasksRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|unique:posts|max:255',
+            'title' => 'required|unique:tasks|max:255',
             'description' => 'required',
             'end_estimate_date' => 'required',
             'owner' => 'required|numeric',

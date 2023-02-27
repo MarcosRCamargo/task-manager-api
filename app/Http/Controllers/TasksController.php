@@ -94,14 +94,21 @@ class TasksController extends Controller
      * @param  \App\Models\Tasks  $tasks
      * @return \Illuminate\Http\Response
      */
-    public function update(StoreTasksRequest $request, Tasks $tasks)
+    public function update(Request $request, $id)
     {
-        $tasks->update($request->all());
-
+        $task = Tasks::find($id);
+        $task->title = $request->title;
+        $task->description = $request->description;
+        $task->start_date = $request->start_date;
+        $task->end_estimate_date = $request->end_estimate_date;
+        $task->status = $request->status;
+        $task->owner = $request->owner;
+        $task->delegated_user = $request->delegated_user;
+        $task->save();
         return response()->json([
             'status' => true,
-            'message' => "Task Updated successfully!",
-            'task' => $tasks
+            'message' => "Tarefa Atualizada com sucesso!",
+            'task' => $task
         ], 200);
     }
 
@@ -117,7 +124,7 @@ class TasksController extends Controller
         if( $tasks->delete() ){
             return response()->json([
                 'status' => true,
-                'message' => "Task Deleted successfully!",
+                'message' => "Tarefa Deletada com sucesso!",
             ], 200);
         }
     }
