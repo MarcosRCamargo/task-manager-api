@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTasksRequest;
-use App\Http\Requests\UpdateTasksRequest;
-use App\Models\Task;
 use App\Models\Tasks;
 use Illuminate\Http\Request;
 
@@ -29,15 +27,7 @@ class TasksController extends Controller
      */
     public function create(Request $request)
     {
-        $request->validate([
-            'title' => 'required|unique:posts|max:255',
-            'description' => 'required',
-            'start_date' => '',
-            'end_estimate_date' => 'required',
-            'end_date' => '',
-            'owner' => 'required|numeric',
-            'delegated_user' => 'required|numeric',
-        ]);
+        $this->validateTask($request);
         $tasks = Tasks::create($request->all());
         if( $tasks->save() ){
             return response()->json([
@@ -56,12 +46,14 @@ class TasksController extends Controller
      */
     public function store(Request $request)
     {
-        $tasks = Tasks::create($request->all());
-        if( $tasks->save() ){
+
+        $this->validateTask($request);
+        $task = Tasks::create($request->all());
+        if( $task->save() ){
             return response()->json([
                 'status' => true,
                 'message' => "Tarefa Criada com sucesso!",
-                'task' => $tasks
+                'task' => $task
             ], 201);
         }
     }
@@ -122,5 +114,17 @@ class TasksController extends Controller
                 'message' => "Task Deleted successfully!",
             ], 200);
         }
+    }
+    public function validateTask($request)
+    {
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'start_date' => 'date',
+            'end_estimate_date' => 'required',
+            'end_date' => 'nulable',
+            'owner' => 'required|numeric',
+            'delegated_user' => 'required|numeric',
+        ]);
     }
 }
