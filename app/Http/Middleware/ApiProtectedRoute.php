@@ -4,8 +4,12 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use PHPOpenSourceSaver\JWTAuth\Http\Middleware\BaseMiddleware;
 
-class ApiProtectedRoute
+class ApiProtectedRoute extends BaseMiddleware
 {
     /**
      * Handle an incoming request.
@@ -16,6 +20,17 @@ class ApiProtectedRoute
      */
     public function handle(Request $request, Closure $next)
     {
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            if ($e instanceof TokenInvalidException){
+                return response()->json(['status' => 'Token Invalido']);
+            }else if ($e instanceof TokenExpiredException){
+                return response()->json(['status' => 'Token Expirado']);
+            }else{
+                return response()->json(['status' => 'Token não encontrado']);
+            }
+        }
         return $next($request);
     }
 }

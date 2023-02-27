@@ -32,8 +32,8 @@ Route::get('/', function () {
 //     Route::delete('task/{id}', 'destroy');
 // });
 
-Route::middleware('api')->group(function () {
-    Route::post('/login', [TasksController::class, 'login']);
+Route::middleware('apiJwt')->group(function () {
+    // Route::post('/login', [TasksController::class, 'login']);
     Route::get('/tasks', [TasksController::class, 'index']);
     Route::get('/tasks/{id}', [TasksController::class, 'show']);
     Route::post('/tasks', [TasksController::class, 'store']);

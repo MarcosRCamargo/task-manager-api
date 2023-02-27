@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTasksRequest;
 use App\Models\Tasks;
 use Illuminate\Http\Request;
+use App\Jobs\newTaskManager as JobsNewTaskManager;
+use stdClass;
 
 class TasksController extends Controller
 {
@@ -126,5 +128,21 @@ class TasksController extends Controller
             'owner' => 'required|numeric',
             'delegated_user' => 'required|numeric',
         ]);
+    }
+    public function sendMail($user, $task)  
+    {
+        $user = new stdClass();
+        $task = new stdClass();
+        $user->name = "Marcos Camargo";
+        $user->email = "marcos.marrize@gmail.com";
+        $task->title = 'Primeira Tarefa';
+        $task->description= 'Tarefa de criação de Documentação de API';
+        $task->start_date= '02-25-2023 09:00:00';
+        $task->end_estimate_date= '02-25-2023 09:00:00';
+        $task->end_date= '02-25-2023 09:00:00';
+        $task->status= 1;
+        $task->owner= 1;
+        $task->delegated_user= 2;
+        JobsNewTaskManager::dispatch($user, $task)->delay(now()->addSeconds(10));
     }
 }
